@@ -23,7 +23,6 @@
         .animate-in { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* 텍스트 한 줄 강제 및 크기 자동 조절 */
         .title-one-line {
             white-space: nowrap !important;
             display: block;
@@ -33,7 +32,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Lucide 아이콘 보정 */
         svg.lucide {
             display: inline-block;
             vertical-align: middle;
@@ -42,7 +40,6 @@
 </head>
 <body class="bg-[#FDFDFD]">
     <div id="root">
-        <!-- 초기 로딩 화면 -->
         <div class="flex items-center justify-center min-h-screen text-slate-400 font-medium">
             웹앱을 구성하는 중입니다...
         </div>
@@ -51,27 +48,25 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
         
-        /**
-         * Icon 컴포넌트: 
-         * TypeError: icon.toSvg is not a function 에러를 해결하기 위해
-         * lucide.createIcons()를 사용하는 방식으로 수정됨.
-         */
         const Icon = ({ name, size = 24, className = "" }) => {
             const iconRef = useRef(null);
 
             useEffect(() => {
-                if (window.lucide && iconRef.current) {
-                    // 케밥 케이스 변환 (CamelCase -> kebab-case)
-                    const iconName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-                    iconRef.current.innerHTML = `<i data-lucide="${iconName}"></i>`;
-                    window.lucide.createIcons({
-                        attrs: {
-                            width: size,
-                            height: size,
-                            class: `lucide ${className}`
-                        }
-                    });
-                }
+                const timer = setInterval(() => {
+                    if (window.lucide && window.lucide.icons[name]) {
+                        const icon = window.lucide.icons[name];
+                        iconRef.current.innerHTML = `<i data-lucide="${name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()}"></i>`;
+                        window.lucide.createIcons({
+                            attrs: {
+                                width: size,
+                                height: size,
+                                class: `lucide ${className}`
+                            }
+                        });
+                        clearInterval(timer);
+                    }
+                }, 100);
+                return () => clearInterval(timer);
             }, [name, size, className]);
 
             return <span ref={iconRef} className="inline-flex items-center justify-center" style={{ width: size, height: size }}></span>;
@@ -80,7 +75,6 @@
         const App = () => {
             const [activeTab, setActiveTab] = useState('overview');
 
-            // 이미지 파일 경로 (GitHub Root에 함께 업로드되어야 함)
             const logoUrl = "CHEC Logo6.jpg";
             const directorUrl = "서정균.jpg";
 
@@ -101,12 +95,12 @@
                                 <div className="relative h-80 rounded-[2.5rem] overflow-hidden shadow-2xl bg-[#3ab0e5]">
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                                     <div className="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
-                                        <div className="mb-6 w-32 h-32 bg-white/20 backdrop-blur-md rounded-[2.5rem] p-3 shadow-inner border border-white/40 overflow-hidden">
+                                        {/* 로고 테두리 및 배경 박스 제거됨 */}
+                                        <div className="mb-4 w-40 h-40 overflow-hidden">
                                             <img src={logoUrl} alt="CHEC" className="w-full h-full object-contain" 
                                                  onError={(e) => { e.target.onerror = null; e.target.src="https://via.placeholder.com/160?text=LOGO"; }} />
                                         </div>
                                         
-                                        {/* 한 줄 표시 보장 (글자 크기 자동 조절) */}
                                         <div className="w-full overflow-hidden px-4">
                                             <h1 className="text-[5.2vw] sm:text-2xl font-black text-white mb-3 leading-none tracking-tighter drop-shadow-lg title-one-line">
                                                 {competitionData.title}
@@ -259,7 +253,7 @@
                     <main className="flex-1 p-6 max-w-md mx-auto w-full">{renderContent()}</main>
 
                     <div className="fixed bottom-10 left-6 right-6 z-50 max-w-md mx-auto">
-                        <nav className="bg-slate-950/90 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-5 flex justify-around items-center shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
+                        <nav className="bg-slate-950/90 backdrop-blur-2xl border border-white/10 rounded-[3rem] p-4 flex justify-around items-center shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
                             {[
                                 { id: 'overview', icon: 'Info', label: 'OVERVIEW' },
                                 { id: 'events', icon: 'Trophy', label: 'CLASSES' },
@@ -278,17 +272,16 @@
             );
         };
 
-        // DOM이 준비된 후 React 렌더링
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-
         function init() {
             const rootElement = document.getElementById('root');
             const root = ReactDOM.createRoot(rootElement);
             root.render(<App />);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
         }
     </script>
 </body>
