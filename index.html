@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 서정균 감독님 추모 승마대회</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons (Specific Version for stability) -->
+    <script src="https://unpkg.com/lucide@0.321.0/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            letter-spacing: -0.03em;
+            word-break: keep-all;
+            -webkit-font-smoothing: antialiased;
+        }
+        .animate-in { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 텍스트 한 줄 강제 및 크기 자동 조절 */
+        .title-one-line {
+            white-space: nowrap !important;
+            display: block;
+            width: 100%;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Lucide 아이콘 보정 */
+        svg.lucide {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-[#FDFDFD]">
+    <div id="root">
+        <!-- 초기 로딩 화면 -->
+        <div class="flex items-center justify-center min-h-screen text-slate-400 font-medium">
+            웹앱을 구성하는 중입니다...
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        /**
+         * Icon 컴포넌트: 
+         * TypeError: icon.toSvg is not a function 에러를 해결하기 위해
+         * lucide.createIcons()를 사용하는 방식으로 수정됨.
+         */
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const iconRef = useRef(null);
+
+            useEffect(() => {
+                if (window.lucide && iconRef.current) {
+                    // 케밥 케이스 변환 (CamelCase -> kebab-case)
+                    const iconName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+                    iconRef.current.innerHTML = `<i data-lucide="${iconName}"></i>`;
+                    window.lucide.createIcons({
+                        attrs: {
+                            width: size,
+                            height: size,
+                            class: `lucide ${className}`
+                        }
+                    });
+                }
+            }, [name, size, className]);
+
+            return <span ref={iconRef} className="inline-flex items-center justify-center" style={{ width: size, height: size }}></span>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+
+            // 이미지 파일 경로 (GitHub Root에 함께 업로드되어야 함)
+            const logoUrl = "CHEC Logo6.jpg";
+            const directorUrl = "서정균.jpg";
+
+            const competitionData = {
+                title: "2026 서정균 감독님 추모 승마대회",
+                date: "2026년 5월 31일 (일요일)",
+                location: "청학승마클럽",
+                address: "경기 남양주시 진접읍 내각2로 11번길 76",
+                morningEvents: ["마장마술 B 클래스", "마장마술 C 클래스", "마장마술 D 클래스", "마장마술 F 클래스"],
+                afternoonEvents: ["장애물 30", "장애물 80", "릴레이 경기", "권승 경기"]
+            };
+
+            const renderContent = () => {
+                switch (activeTab) {
+                    case 'overview':
+                        return (
+                            <div className="animate-in space-y-6">
+                                <div className="relative h-80 rounded-[2.5rem] overflow-hidden shadow-2xl bg-[#3ab0e5]">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                                    <div className="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+                                        <div className="mb-6 w-32 h-32 bg-white/20 backdrop-blur-md rounded-[2.5rem] p-3 shadow-inner border border-white/40 overflow-hidden">
+                                            <img src={logoUrl} alt="CHEC" className="w-full h-full object-contain" 
+                                                 onError={(e) => { e.target.onerror = null; e.target.src="https://via.placeholder.com/160?text=LOGO"; }} />
+                                        </div>
+                                        
+                                        {/* 한 줄 표시 보장 (글자 크기 자동 조절) */}
+                                        <div className="w-full overflow-hidden px-4">
+                                            <h1 className="text-[5.2vw] sm:text-2xl font-black text-white mb-3 leading-none tracking-tighter drop-shadow-lg title-one-line">
+                                                {competitionData.title}
+                                            </h1>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 w-full justify-center">
+                                            <div className="h-[1px] flex-1 bg-white/30 max-w-[40px]"></div>
+                                            <p className="text-white text-[10px] font-black tracking-[0.3em] uppercase opacity-90 whitespace-nowrap">
+                                                CHUNG HAK EQUESTRIAN CLUB
+                                            </p>
+                                            <div className="h-[1px] flex-1 bg-white/30 max-w-[40px]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-4">
+                                    <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center gap-6">
+                                        <div className="bg-sky-50 p-4 rounded-3xl text-[#3ab0e5]">
+                                            <Icon name="Calendar" size={28} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1">Schedule</p>
+                                            <p className="text-slate-800 font-black text-xl">{competitionData.date}</p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-start gap-6 group">
+                                        <div className="bg-sky-50 p-4 rounded-3xl text-[#3ab0e5]">
+                                            <Icon name="MapPin" size={28} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1">Location</p>
+                                            <p className="text-slate-800 font-black text-xl leading-tight mb-1">{competitionData.location}</p>
+                                            <p className="text-sm text-slate-500 font-medium leading-relaxed mb-4">{competitionData.address}</p>
+                                            <button 
+                                                onClick={() => window.open('https://map.kakao.com/?q=' + encodeURIComponent(competitionData.address))} 
+                                                className="w-full py-4 bg-[#3ab0e5] text-white text-sm font-black rounded-3xl flex items-center justify-center gap-2 shadow-lg shadow-sky-100 active:scale-[0.98] transition-all"
+                                            >
+                                                지도 확인하기 <Icon name="ExternalLink" size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'events':
+                        return (
+                            <div className="animate-in space-y-8">
+                                <section>
+                                    <div className="flex items-center justify-between mb-5 border-b border-slate-100 pb-3 px-2">
+                                        <h3 className="text-xl font-black text-slate-800 flex items-center gap-3"><Icon name="Clock" className="text-[#3ab0e5]" /> AM SESSION</h3>
+                                        <span className="text-[10px] font-black px-4 py-1.5 bg-sky-100 text-[#3ab0e5] rounded-full tracking-widest">DRESSAGE</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {competitionData.morningEvents.map((event, idx) => (
+                                            <div key={idx} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+                                                <span className="font-bold text-slate-700 text-lg">{event}</span>
+                                                <Icon name="Trophy" size={20} className="text-slate-200" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                                <section>
+                                    <div className="flex items-center justify-between mb-5 border-b border-slate-100 pb-3 px-2">
+                                        <h3 className="text-xl font-black text-slate-800 flex items-center gap-3"><Icon name="Clock" className="text-[#3ab0e5]" /> PM SESSION</h3>
+                                        <span className="text-[10px] font-black px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full tracking-widest">JUMPING</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {competitionData.afternoonEvents.map((event, idx) => (
+                                            <div key={idx} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+                                                <span className="font-bold text-slate-700 text-lg">{event}</span>
+                                                <Icon name="Trophy" size={20} className="text-slate-200" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            </div>
+                        );
+                    case 'startlist':
+                        return (
+                            <div className="animate-in flex flex-col items-center justify-center py-40 text-center px-8">
+                                <div className="relative mb-14">
+                                    <div className="absolute inset-0 bg-sky-200 blur-[60px] rounded-full opacity-30 animate-pulse scale-125"></div>
+                                    <div className="relative w-32 h-32 bg-white rounded-[2.5rem] shadow-2xl flex items-center justify-center border border-slate-50">
+                                        <Icon name="Users" size={64} className="text-[#3ab0e5]" />
+                                    </div>
+                                </div>
+                                <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-4">대진표 준비 중</h3>
+                                <p className="text-slate-400 font-medium leading-relaxed text-sm">참가 접수 완료 후 실시간 대진표가 공개됩니다.</p>
+                            </div>
+                        );
+                    case 'memorial':
+                        return (
+                            <div className="animate-in space-y-6 pb-4">
+                                <div className="bg-white rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100">
+                                    <div className="h-[520px] bg-slate-900 flex items-center justify-center relative">
+                                        <img src={directorUrl} alt="故 서정균 감독님" className="w-full h-full object-cover shadow-inner" 
+                                             onError={(e) => { e.target.onerror = null; e.target.src="https://via.placeholder.com/400x520?text=Director+Photo"; }} />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent flex flex-col justify-end p-10 text-white text-left">
+                                            <p className="text-[#3ab0e5] font-black text-[11px] tracking-[0.4em] mb-3 uppercase">Legendary Master</p>
+                                            <p className="text-white font-black text-4xl mb-2 leading-none">故 서정균 감독님</p>
+                                            <p className="text-slate-400 text-xs font-black tracking-[0.2em]">1962 — 2024</p>
+                                        </div>
+                                    </div>
+                                    <div className="p-10 text-center">
+                                        <h4 className="font-black text-slate-800 text-2xl mb-8 leading-tight">"기마정신(騎馬精神)의 정수"</h4>
+                                        <p className="text-slate-500 leading-relaxed font-medium text-base mb-4">
+                                            대한민국 마장마술의 한 획을 그으신 서정균 감독님의 숭고한 정신을 계승하기 위해 본 대회를 개최합니다.
+                                        </p>
+                                        <p className="text-slate-500 leading-relaxed font-medium text-base">
+                                            청학승마클럽과 함께한 감독님의 발자취를 잊지 않겠습니다.
+                                        </p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => window.open('https://youtu.be/u7uU5EGbYWk?si=tkyn0mWI02694L0j')} 
+                                    className="w-full py-7 bg-slate-950 text-white rounded-[3rem] font-black flex items-center justify-center gap-5 shadow-2xl hover:bg-black transition-all active:scale-[0.98]"
+                                >
+                                    <Icon name="Video" size={28} className="text-red-500 fill-red-500" /> 생전 기승 영상 감상
+                                </button>
+                            </div>
+                        );
+                    default:
+                        return null;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-[#FDFDFD] flex flex-col text-slate-900 font-sans pb-40">
+                    <header className="bg-white/90 backdrop-blur-3xl sticky top-0 z-50 px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 bg-[#3ab0e5] rounded-[1.25rem] flex items-center justify-center overflow-hidden shadow-2xl shadow-sky-200/40 p-0.5 border border-white/30 transition-transform active:scale-95 duration-300">
+                                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" 
+                                     onError={(e) => { e.target.onerror = null; e.target.src="https://via.placeholder.com/64?text=LOGO"; }} />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-black text-slate-900 tracking-tighter leading-none mb-2">청학승마클럽</h2>
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 bg-[#3ab0e5] rounded-full"></span>
+                                    <p className="text-[10px] text-[#3ab0e5] font-black tracking-[0.2em] uppercase whitespace-nowrap">CHUNG HAK EQUESTRIAN CLUB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-end opacity-30 text-right">
+                            <span className="text-[9px] font-black text-slate-400 tracking-[0.2em]">SINCE 2003</span>
+                            <div className="h-[2px] w-6 bg-[#3ab0e5] mt-1"></div>
+                        </div>
+                    </header>
+
+                    <main className="flex-1 p-6 max-w-md mx-auto w-full">{renderContent()}</main>
+
+                    <div className="fixed bottom-10 left-6 right-6 z-50 max-w-md mx-auto">
+                        <nav className="bg-slate-950/90 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-5 flex justify-around items-center shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
+                            {[
+                                { id: 'overview', icon: 'Info', label: 'OVERVIEW' },
+                                { id: 'events', icon: 'Trophy', label: 'CLASSES' },
+                                { id: 'startlist', icon: 'Users', label: 'LINEUP' },
+                                { id: 'memorial', icon: 'ImageIcon', label: 'MEMORIAL' }
+                            ].map((tab) => (
+                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); window.scrollTo(0, 0); }} className={`relative flex flex-col items-center justify-center w-16 py-2 transition-all duration-300 ${activeTab === tab.id ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+                                    {activeTab === tab.id && <div className="absolute inset-0 bg-[#3ab0e5]/20 rounded-full blur-2xl animate-pulse"></div>}
+                                    <Icon name={tab.icon} size={24} className={activeTab === tab.id ? 'mb-1 text-[#3ab0e5]' : 'mb-1'} />
+                                    <span className={`text-[9px] font-black tracking-widest ${activeTab === tab.id ? 'opacity-100' : 'opacity-50'}`}>{tab.label}</span>
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
+                </div>
+            );
+        };
+
+        // DOM이 준비된 후 React 렌더링
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        function init() {
+            const rootElement = document.getElementById('root');
+            const root = ReactDOM.createRoot(rootElement);
+            root.render(<App />);
+        }
+    </script>
+</body>
+</html>
